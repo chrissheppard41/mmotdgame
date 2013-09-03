@@ -61,6 +61,7 @@ var Game = Class({
             this.data = data;
             this.alpha = 0.5;
             this.dragging = true;
+            window.document.getElementById('score').innerHTML = 'move yer hole';
         };
         face.mouseup   = face.mouseupoutside = function(data) {
             this.alpha = 1
