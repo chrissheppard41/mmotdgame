@@ -1,0 +1,4 @@
+mmotdgame
+=========
+
+Game for mmotd
