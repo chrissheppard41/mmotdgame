@@ -53,17 +53,19 @@ var Game = Class({
             face         = new PIXI.Sprite(texture);
         face.interactive = true;
         face.buttonMode  = true;
-        face.anchor.x    = 0;
-        face.anchor.y    = 0;
+        face.anchor.x    = 0.5;
+        face.anchor.y    = 0.5;
 
         // INTERACTIONS
         face.mousedown = function(data) {
-            data.originalEvent.preventDefault();
             this.data = data;
+            this.alpha = 0.5;
             this.dragging = true;
         };
-        face.mouseup   = function(data) {
+        face.mouseup   = face.mouseupoutside = function(data) {
+            this.alpha = 1
             this.dragging = false;
+            // set the interaction data to null
             this.data = null;
         };
         face.mousemove = function(data)
@@ -74,11 +76,12 @@ var Game = Class({
                 var newPosition = this.data.getLocalPosition(this.parent);
                 this.position.x = newPosition.x;
                 this.position.y = newPosition.y;
-          }
+            }
         }
 
-        face.position.x    = 0;
-        face.position.y    = 0;
+        // START POS
+        face.position.x    = 20;
+        face.position.y    = 20;
 
         this.stage.addChild(face);
     },
