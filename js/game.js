@@ -8,8 +8,14 @@
   **/
 var Game = Class({
     initialize: function(config) {
-      this.config = config;
-      this.assets = {};
+      
+      // Dynamic vars
+      this.config            = config;
+      this.assets            = {};
+
+      // Static vars
+      this.config.gridHeight = 20;
+      this.config.gridWidth  = 20;
 
       if( this._ready() ) {
           // Set up scene
@@ -19,7 +25,6 @@ var Game = Class({
           // Start building game
           this._mountRenderer(this.renderer.view);
           this._loadAssets();
-          this._assignInteractions();
       }
     },
 
@@ -30,31 +35,97 @@ var Game = Class({
       * @return null
       **/
     _animate:function () {
-        this.assets.face.position.x += 10;
-        if( this.assets.face.position.x > this.config.iWidth )
-            this.assets.face.position.x = -30;
-    },
-
-    _loadAssets:function() {
-        // Load assets
-        var texture = PIXI.Texture.fromImage("imgs/face.png");
-        this.assets.face = new PIXI.Sprite(texture);
-        this.assets.face.anchor.x = 0.5;
-        this.assets.face.anchor.y = 0.5;
-        this.assets.face.position.x = 200;
-        this.assets.face.position.y = 150;
-        this.assets.face.setInteractive(true);
-
-        this.stage.addChild(this.assets.face);
+        
     },
 
     /**
-      * _mountRenderer
-      * Assign the renderer to the DOM
+      * _loadAssets
+      * Fetch / Create actors and position them
       **/
-    _assignInteractions:function() {
-        this.assets.face.click = function(mouseData){
-           window.alert('Quick arent ye?!');
+    _loadAssets:function() {
+        this._loadGrid();
+
+        this._testDragableHead();
+    },
+
+    _testDragableHead:function() {
+        var texture      = PIXI.Texture.fromImage("./imgs/face.png"),
+            face         = new PIXI.Sprite(texture);
+        face.interactive = true;
+        face.buttonMode  = true;
+        face.anchor.x    = 0;
+        face.anchor.y    = 0;
+
+        // INTERACTIONS
+        face.mousedown = function(data) {
+            data.originalEvent.preventDefault();
+            this.data = data;
+            this.dragging = true;
+        };
+        face.mouseup   = function(data) {
+            this.dragging = false;
+            this.data = null;
+        };
+        face.mousemove = function(data)
+        {
+            if(this.dragging)
+            {
+                // need to get parent coords..
+                var newPosition = this.data.getLocalPosition(this.parent);
+                this.position.x = newPosition.x;
+                this.position.y = newPosition.y;
+          }
+        }
+
+        face.position.x    = 0;
+        face.position.y    = 0;
+
+        this.stage.addChild(face);
+    },
+
+    /**
+      * _loadGrid
+      * Build grid system
+      **/
+    _loadGrid:function() {
+
+        // COLLECT GRID DATA
+        var grid        = PIXI.Texture.fromImage("./imgs/grid1.png"),
+            grid_hover  = PIXI.Texture.fromImage("./imgs/grid2.png"),
+            grid_height = Math.floor(this.config.iHeight / this.config.gridHeight),
+            grid_width = Math.floor(this.config.iWidth / this.config.gridWidth),
+            grid_count = (grid_height * grid_width);
+
+        // CREATE GRID
+        var ypos = 1;
+        for (var i=0; i < grid_count; i++) {
+            var lo = i%grid_width,
+                xpos = (lo+1);
+            if (i != 0 && (lo == 0))
+                ypos++;
+            var sq = new PIXI.Sprite(grid);
+            sq.anchor.x = 1;
+            sq.anchor.y = 1;
+            sq.position.x = xpos*this.config.gridWidth;
+            sq.position.y = ypos*this.config.gridHeight;
+
+            // GRID INTERACTIONS
+            sq.interactive = true;
+            sq.mouseover = function(data) {
+                this.isOver = true;
+                if (this.isdown) return;
+                this.setTexture(grid_hover);
+            };
+            sq.mouseout = function(data) {
+                this.isOver = false;
+                if (this.isdown) return;
+                this.setTexture(grid);
+            };
+            sq.click = function(data) {
+                this.alpha = 0.3;
+            };
+
+            this.stage.addChild(sq);
         }
     },
 
@@ -80,7 +151,7 @@ var Game = Class({
       * Calls pixi.js autoDetectRenderer method
       **/
     _renderer:function () {
-        var renderer = PIXI.autoDetectRenderer(this.config.iWidth, this.config.iHeight);
+        var renderer = PIXI.autoDetectRenderer(this.config.iWidth, this.config.iHeight, null);
         return renderer;
     },
 
