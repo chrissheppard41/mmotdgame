@@ -56,6 +56,9 @@ var Game = Class({
         face.anchor.x    = 0.5;
         face.anchor.y    = 0.5;
 
+        // FOR CLICK FUNCTION SCOPE
+        var parent = this;
+
         // INTERACTIONS
         face.mousedown = function(data) {
             this.data = data;
@@ -67,6 +70,22 @@ var Game = Class({
             this.dragging = false;
             // set the interaction data to null
             this.data = null;
+
+            // Lock to nearest grid co-ord
+            var xlo = (this.position.x%parent.config.gridWidth),
+                ylo = (this.position.y%parent.config.gridHeight);
+            if (xlo != 0) {
+                if (xlo > (parent.config.gridWidth / 2)) {
+                    xlo = (parent.config.gridWidth - xlo) * -1;
+                }
+                this.position.x -= xlo;
+            }
+            if (ylo != 0) {
+                if (ylo > (parent.config.gridHeight / 2)) {
+                    ylo = (parent.config.gridHeight - ylo) * -1;
+                }
+                this.position.y -= ylo;
+            }
         };
         face.mousemove = function(data)
         {
@@ -94,18 +113,28 @@ var Game = Class({
 
         // COLLECT GRID DATA
         var grid        = PIXI.Texture.fromImage("./imgs/grid1.png"),
+            grid_b      = PIXI.Texture.fromImage("./imgs/grid3.png"),
             grid_hover  = PIXI.Texture.fromImage("./imgs/grid2.png"),
             grid_height = Math.floor(this.config.iHeight / this.config.gridHeight),
-            grid_width = Math.floor(this.config.iWidth / this.config.gridWidth),
-            grid_count = (grid_height * grid_width);
+            grid_width  = Math.floor(this.config.iWidth / this.config.gridWidth);
+        // ENSURE AN EVEN NUMBER OF SQUARES PER SIDE
+        if (grid_width%2 != 0)
+            grid_width--;
+        var grid_count  = (grid_height * grid_width),
+            halfwayline = (grid_width/2);
 
         // CREATE GRID
         var ypos = 1;
         for (var i=0; i < grid_count; i++) {
-            var lo = i%grid_width,
+            var lo   = i%grid_width,
                 xpos = (lo+1);
             if (i != 0 && (lo == 0))
                 ypos++;
+            if (xpos > halfwayline) {
+                // team b
+            } else {
+                // team a
+            }
             var sq = new PIXI.Sprite(grid);
             sq.anchor.x = 1;
             sq.anchor.y = 1;
