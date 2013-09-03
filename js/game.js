@@ -111,6 +111,9 @@ var Game = Class({
             sq.anchor.y = 1;
             sq.position.x = xpos*this.config.gridWidth;
             sq.position.y = ypos*this.config.gridHeight;
+            
+            // FOR CLICK FUNCTION SCOPE
+            var parent = this;
 
             // GRID INTERACTIONS
             sq.interactive = true;
@@ -125,7 +128,10 @@ var Game = Class({
                 this.setTexture(grid);
             };
             sq.click = function(data) {
-                this.alpha = 0.3;
+                var o = parent.config.oGameTools;
+                o.style.display = 'block';
+                o.style.left = String(this.position.x) + 'px';
+                o.style.top  = String(this.position.y - o.offsetHeight) + 'px';
             };
 
             this.stage.addChild(sq);

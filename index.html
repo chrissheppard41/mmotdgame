@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Pixi Test</title>
+    <link rel="stylesheet" type="text/css" href="./css/screen.css" />
     <script type="text/javascript" src="./js/pixi.js"></script>
     <script type="text/javascript" src="./js/lib.js"></script>
     <script type="text/javascript" src="./js/game.js"></script>
@@ -9,10 +10,12 @@
         window.onload = function () {
 
             var config = {
-                oGameObj : document.getElementById('gameobj'),
-                bg       : 0x66FF99,
-                iWidth   : 400,
-                iHeight  : 300
+                oGameObj   : document.getElementById('gameobj'),
+                oGameScore : document.getElementById('gamescore'),
+                oGameTools : document.getElementById('gametools'),
+                bg         : 0x66FF99,
+                iWidth     : 400,
+                iHeight    : 300
             };
 
             var game = new Game(config);
@@ -31,6 +34,8 @@
 </head>
 <body>
 
+<div id="gamescore"></div>
+<div id="gametools"></div>
 <div id="gameobj"></div>
 
 </body>
